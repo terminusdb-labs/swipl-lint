@@ -29,7 +29,7 @@ from bs4 import BeautifulSoup
 
 def filter_exceptions(libraries: [dict]) -> [dict]:
     # Exceptions because they will probably never be used
-    exceptions = ['library(help)', 'library(statistics)']
+    exceptions = ['library(help)', 'library(statistics)', 'library(clpb)']
     return [x for x in libraries if x['library'] not in exceptions]
 
 def get_libraries() -> [dict]:
