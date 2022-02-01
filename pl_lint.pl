@@ -1,5 +1,7 @@
 :- initialization(lint_files).
 
+:- use_module(library(prolog_xref)).
+
 :- dynamic failed/1.
 
 lint_file(File) :-
