@@ -22,7 +22,7 @@ check_file(File) :-
 check_file(_) :-
     true.
 
-filter_string(String) :-
+filter_current_dir(String) :-
     sub_string(String, 0, 1, _, '.').
 
 add_dir_name(Dir, File, NewFile) :-
@@ -30,7 +30,7 @@ add_dir_name(Dir, File, NewFile) :-
 
 check_dir(Dir) :-
     directory_files(Dir, Entries),
-    exclude(filter_string, Entries, FilteredEntries),
+    exclude(filter_current_dir, Entries, FilteredEntries),
     maplist(add_dir_name(Dir), FilteredEntries, Files),
     forall(member(File, Files), check_file(File)).
 
