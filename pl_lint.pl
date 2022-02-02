@@ -4,13 +4,19 @@
 
 :- dynamic failed/1.
 
-lint_file(File) :-
-    xref_source(File),
+goal_not_available(File, Goal) :-
     xref_called(File, Goal, _),
     \+ xref_defined(File, Goal, _),
-    format("Predicate ~q not found in file ~s~n", [Goal, File]),
-    asserta(failed(true)),
-    xref_clean(File).
+    term_to_atom(Goal, GoalAtom),
+    \+ sub_atom(GoalAtom, _, _, _, 'clpfd:'),
+    \+ sub_atom(GoalAtom, _, _, _, 'file_search_path'),
+    \+ sub_atom(GoalAtom, _, _, _, 'user:file_search_path').
+
+lint_file(File) :-
+    xref_source(File),
+    (   goal_not_available(File, Goal)
+    ->  format("Predicate ~q not found in file ~s~n", [Goal, File]),
+        asserta(failed(true))).
 
 check_file(File) :-
     file_name_extension(_, pl, File),
