@@ -4,19 +4,23 @@
 
 :- dynamic failed/1.
 
-goal_not_available(File, Goal) :-
-    xref_called(File, Goal, _),
-    \+ xref_defined(File, Goal, _),
+goal_not_available(File) :-
+    forall((xref_called(File, Goal, _, _, LineNumber),
+            \+ xref_defined(File, Goal, _)), (
     term_to_atom(Goal, GoalAtom),
     \+ sub_atom(GoalAtom, _, _, _, 'clpfd:'),
+    \+ sub_atom(GoalAtom, 0, _, _, '\'$'),
     \+ sub_atom(GoalAtom, _, _, _, 'file_search_path'),
-    \+ sub_atom(GoalAtom, _, _, _, 'user:file_search_path').
+    \+ sub_atom(GoalAtom, _, _, _, 'hup('),
+    \+ sub_atom(GoalAtom, _, _, _, 'user:file_search_path'),
+    format("~s:~d| Predicate ~q not found~n", [File, LineNumber, Goal])
+    )).
 
 lint_file(File) :-
     xref_source(File),
-    (   goal_not_available(File, Goal)
-    ->  format("Predicate ~q not found in file ~s~n", [Goal, File]),
-        asserta(failed(true))).
+    (   goal_not_available(File)
+    ->  asserta(failed(true))
+    ;   true).
 
 check_file(File) :-
     file_name_extension(_, pl, File),
