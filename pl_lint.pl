@@ -17,16 +17,15 @@ goal_not_available(File) :-
             \+ sub_atom(GoalAtom, _, _, _, 'hup('),
             \+ sub_atom(GoalAtom, _, _, _, 'user:file_search_path'),
             predicate_name(Goal, PredName),
-            \+ ignore_predicate(PredName)
+            \+ ignore_predicate(PredName),
+            asserta(failed(true))
            ), (
     format("~s:~d| Predicate ~q not found~n", [File, LineNumber, Goal])
     )).
 
 lint_file(File) :-
     xref_source(File),
-    (   goal_not_available(File)
-    ->  asserta(failed(true))
-    ;   true).
+    goal_not_available(File).
 
 check_file(File) :-
     file_name_extension(_, pl, File),
@@ -57,7 +56,7 @@ exit_script :-
 exit_script :-
     failed(Status),
     Status = false,
-    halt(1).
+    halt(0).
 
 lint_files :-
     load_rules,
