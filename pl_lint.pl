@@ -17,7 +17,7 @@ goal_not_available(File) :-
             \+ sub_atom(GoalAtom, _, _, _, 'hup('),
             \+ sub_atom(GoalAtom, _, _, _, 'user:file_search_path'),
             predicate_name(Goal, PredName),
-            \+ ignore_predicate(PredName),
+            \+ catch(ignore_predicate(PredName), _, false),
             asserta(failed(true))
            ), (
     format("~s:~d| Predicate ~q not found~n", [File, LineNumber, Goal])
