@@ -4,15 +4,21 @@
 
 :- dynamic failed/1.
 
+load_rules :-
+    catch(['./.lint_config.pl'], _, true).
+
 goal_not_available(File) :-
     forall((xref_called(File, Goal, _, _, LineNumber),
-            \+ xref_defined(File, Goal, _)), (
-    term_to_atom(Goal, GoalAtom),
-    \+ sub_atom(GoalAtom, _, _, _, 'clpfd:'),
-    \+ sub_atom(GoalAtom, 0, _, _, '\'$'),
-    \+ sub_atom(GoalAtom, _, _, _, 'file_search_path'),
-    \+ sub_atom(GoalAtom, _, _, _, 'hup('),
-    \+ sub_atom(GoalAtom, _, _, _, 'user:file_search_path'),
+            \+ xref_defined(File, Goal, _),
+            term_to_atom(Goal, GoalAtom),
+            \+ sub_atom(GoalAtom, _, _, _, 'clpfd:'),
+            \+ sub_atom(GoalAtom, 0, _, _, '\'$'),
+            \+ sub_atom(GoalAtom, _, _, _, 'file_search_path'),
+            \+ sub_atom(GoalAtom, _, _, _, 'hup('),
+            \+ sub_atom(GoalAtom, _, _, _, 'user:file_search_path'),
+            predicate_name(Goal, PredName),
+            \+ ignore_predicate(PredName)
+           ), (
     format("~s:~d| Predicate ~q not found~n", [File, LineNumber, Goal])
     )).
 
@@ -54,6 +60,7 @@ exit_script :-
     halt(1).
 
 lint_files :-
+    load_rules,
     asserta(failed(false)),
     check_dir('./'),
     exit_script.
