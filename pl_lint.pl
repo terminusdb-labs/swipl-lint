@@ -1,6 +1,9 @@
 :- initialization(lint_files).
 
 :- use_module(library(prolog_xref)).
+:- use_module(library(prolog_clause), [predicate_name/2]).
+:- use_module(library(apply), [exclude/3, maplist/3]).
+:- use_module(library(lists), [member/2]).
 
 :- dynamic failed/1.
 
