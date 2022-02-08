@@ -23,7 +23,7 @@ goal_not_available(File) :-
             \+ catch(ignore_predicate(PredName), _, false),
             asserta(failed(true))
            ), (
-    format("~s:~d| Predicate ~q not found~n", [File, LineNumber, Goal])
+    format("ERROR: ~s:~d| Predicate ~q not found~n", [File, LineNumber, Goal])
     )).
 
 lint_file(File) :-
