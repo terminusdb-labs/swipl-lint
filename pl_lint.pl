@@ -24,11 +24,26 @@ goal_not_available(File) :-
             asserta(failed(true))
            ), (
     format("ERROR: ~s:~d| Predicate ~q not found~n", [File, LineNumber, PredName])
-    )).
+           )).
+
+% TODO: This doesn't work with meta-predicates like mapm and DCG
+%predicate_unused(File) :-
+%    forall(
+%        (   xref_defined(File, Goal, local(_)),
+%            \+ xref_exported(File, Goal),
+%            \+ xref_called(File, Goal, _, _, _),
+%            predicate_name(Goal, PredName),
+%            \+ PredName = "test/2",
+%            \+ catch(ignore_predicate(PredName), _, false),
+%            asserta(failed(true))
+%           ), (
+%    format("ERROR: ~s| Predicate ~q unused~n", [File, PredName])
+%    )).
 
 lint_file(File) :-
     xref_source(File),
     goal_not_available(File).
+%    predicate_unused(File).
 
 check_file(File) :-
     file_name_extension(_, pl, File),
