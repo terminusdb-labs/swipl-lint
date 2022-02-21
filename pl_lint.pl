@@ -10,15 +10,25 @@
 load_rules :-
     catch(['./.lint_config.pl'], _, true).
 
+check_goal(GoalAtom, _, _) :-
+    split_string(GoalAtom, ':', "", [Module, Goal]),
+    !,
+    atom_string(ModuleAtom, Module),
+    atom_string(ModuleGoalAtom, Goal),
+    module_property(ModuleAtom, file(File)),
+    xref_source(File),
+    term_to_atom(ModuleGoalTerm, ModuleGoalAtom),
+    \+ xref_defined(File, ModuleGoalTerm, _).
+check_goal(GoalAtom, File, Goal) :-
+    \+ xref_defined(File, Goal, _),
+    \+ sub_atom(GoalAtom, 0, _, _, '\'$'),
+    \+ sub_atom(GoalAtom, _, _, _, 'file_search_path'),
+    \+ sub_atom(GoalAtom, _, _, _, 'hup(').
+
 goal_not_available(File) :-
     forall((xref_called(File, Goal, _, _, LineNumber),
-            \+ xref_defined(File, Goal, _),
             term_to_atom(Goal, GoalAtom),
-            \+ sub_atom(GoalAtom, _, _, _, 'clpfd:'),
-            \+ sub_atom(GoalAtom, 0, _, _, '\'$'),
-            \+ sub_atom(GoalAtom, _, _, _, 'file_search_path'),
-            \+ sub_atom(GoalAtom, _, _, _, 'hup('),
-            \+ sub_atom(GoalAtom, _, _, _, 'user:file_search_path'),
+            check_goal(GoalAtom, File, Goal),
             predicate_name(Goal, PredName),
             \+ catch(ignore_predicate(PredName), _, false),
             asserta(failed(true))
