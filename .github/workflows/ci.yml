@@ -19,5 +19,5 @@ jobs:
       - name: Run linter
         run: |
           swipl pl_lint.pl > output.txt || true
-          grep output.txt 'member/2'
-          grep output.txt 'nonExistingPredicate'
+          grep 'member/2' output.txt
+          grep 'nonExistingPredicate' output.txt
