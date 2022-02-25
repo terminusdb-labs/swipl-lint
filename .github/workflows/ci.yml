@@ -18,6 +18,6 @@ jobs:
         # Can be found on: https://github.com/terminusdb-labs/swipl-lint/
       - name: Run linter
         run: |
-          [[ $(swipl pl_lint.pl > output.txt) -eq 1 ]]
+          swipl pl_lint.pl > output.txt || true
           grep output.txt 'member/2'
           grep output.txt 'nonExistingPredicate'
