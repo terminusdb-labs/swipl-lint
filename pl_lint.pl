@@ -6,6 +6,7 @@
 :- use_module(library(lists), [member/2]).
 
 :- dynamic failed/1.
+:- dynamic ignore_predicate/1.
 
 load_rules :-
     catch(['./.lint_config.pl'], _, true).
