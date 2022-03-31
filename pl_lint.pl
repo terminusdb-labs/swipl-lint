@@ -7,6 +7,7 @@
 
 :- dynamic failed/1.
 :- dynamic ignore_predicate/1.
+:- dynamic ignore_file/1.
 
 load_rules :-
     catch(['./.lint_config.pl'], _, true).
@@ -41,6 +42,10 @@ lint_file(File) :-
     xref_source(File),
     goal_not_available(File).
 
+check_file(File) :-
+    atom_string(File,Ignore),
+    ignore_file(Ignore),
+    !.
 check_file(File) :-
     file_name_extension(_, pl, File),
     lint_file(File).
